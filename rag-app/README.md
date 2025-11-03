@@ -95,9 +95,25 @@ rag-app/
 └── go.mod
 ```
 
+## 🔗 LlamaIndex 集成
+
+xb 可以作为 LlamaIndex 的向量存储后端，提供高性能检索：
+
+- **[LlamaIndex 集成指南](./LLAMAINDEX_INTEGRATION.md)** ⭐
+- Python/LlamaIndex（AI 层）+ Go/xb（检索层）
+- 向量检索性能提升 20 倍
+
+**优势**：
+- ✅ Go 后端：高性能向量检索
+- ✅ Python 前端：丰富的 LLM 生态
+- ✅ 最佳组合：各自发挥所长
+
+---
+
 ## 📚 相关文档
 
-- [RAG Best Practices](../../doc/ai_application/RAG_BEST_PRACTICES.md)
-- [Hybrid Search](../../doc/ai_application/HYBRID_SEARCH.md)
-- [Vector Diversity](../../doc/VECTOR_DIVERSITY_QDRANT.md)
+- **[LlamaIndex 集成](./LLAMAINDEX_INTEGRATION.md)** - Python + Go 集成方案
+- [RAG Best Practices](../../xb/doc/ai_application/RAG_BEST_PRACTICES.md)
+- [Hybrid Search](../../xb/doc/ai_application/HYBRID_SEARCH.md)
+- [Vector Diversity](../../xb/doc/VECTOR_DIVERSITY_QDRANT.md)
 
