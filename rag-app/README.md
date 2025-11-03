@@ -2,6 +2,16 @@
 
 这是一个使用 xb 构建的完整 RAG (Retrieval Augmented Generation) 应用，展示如何将文档检索与 LLM 结合。
 
+## ⭐ 第三代 Agentic RAG 已实现！
+
+本应用已升级到**第三代 Agentic RAG**，支持：
+- ✅ **智能问题拆解**：自动将复杂问题拆解为多个子问题
+- ✅ **多轮召回**：针对每个子问题分别检索
+- ✅ **智能规划**：分析问题类型并生成最优策略
+- ✅ **结果综合**：将多轮检索结果综合生成答案
+
+详见：**[第三代 Agentic RAG 文档](./AGENTIC_RAG_V3.md)** 🚀
+
 ## 📋 功能
 
 - 文档分块和向量化
@@ -9,6 +19,7 @@
 - 混合检索（关键词 + 向量）
 - 重排序和多样性
 - LLM 集成
+- **⭐ 第三代 Agentic RAG**（问题拆解 + 多轮召回）
 
 ## 🏗️ 架构
 
@@ -72,13 +83,21 @@ curl -X POST http://localhost:8080/api/documents \
     "language": "zh"
   }'
 
-# RAG 查询
+# RAG 查询（默认使用第三代 Agentic RAG）
 curl -X POST http://localhost:8080/api/rag/query \
   -H "Content-Type: application/json" \
   -d '{
-    "question": "如何在Go中使用Channel？",
+    "question": "Go 和 Rust 在并发编程上有什么区别？",
     "doc_type": "article",
     "top_k": 5
+  }'
+
+# 如需使用第一代 RAG（简单问题）
+curl -X POST http://localhost:8080/api/rag/query \
+  -H "Content-Type: application/json" \
+  -d '{
+    "question": "什么是 Channel？",
+    "use_agentic": false
   }'
 ```
 
@@ -87,11 +106,14 @@ curl -X POST http://localhost:8080/api/rag/query \
 ```
 rag-app/
 ├── README.md
-├── main.go            # 主程序
-├── model.go           # 数据模型
-├── repository.go      # 数据访问层
-├── rag_service.go     # RAG 服务层
-├── handler.go         # HTTP 处理器
+├── AGENTIC_RAG_V3.md      # ⭐ 第三代 Agentic RAG 文档
+├── main.go                # 主程序
+├── model.go               # 数据模型
+├── repository.go          # 数据访问层
+├── rag_service.go         # 第一代 RAG 服务
+├── agentic_rag.go         # ⭐ 第三代 Agentic RAG 服务
+├── agentic_rag_test.go    # Agentic RAG 测试
+├── handler.go             # HTTP 处理器
 └── go.mod
 ```
 
@@ -112,6 +134,7 @@ xb 可以作为 LlamaIndex 的向量存储后端，提供高性能检索：
 
 ## 📚 相关文档
 
+- **[第三代 Agentic RAG](./AGENTIC_RAG_V3.md)** ⭐ - 问题拆解 + 多轮召回
 - **[LlamaIndex 集成](./LLAMAINDEX_INTEGRATION.md)** - Python + Go 集成方案
 - [RAG Best Practices](../../xb/doc/ai_application/RAG_BEST_PRACTICES.md)
 - [Hybrid Search](../../xb/doc/ai_application/HYBRID_SEARCH.md)

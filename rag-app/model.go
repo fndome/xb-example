@@ -37,6 +37,8 @@ type RAGQueryRequest struct {
 	DocType  string `json:"doc_type"`
 	Language string `json:"language"`
 	TopK     *int   `json:"top_k"`
+	// UseAgentic 是否使用第三代 Agentic RAG（默认 true）
+	UseAgentic *bool `json:"use_agentic"`
 }
 
 // RAGQueryResponse RAG 查询响应

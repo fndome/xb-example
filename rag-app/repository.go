@@ -5,17 +5,24 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-// ChunkRepository 文档分块仓库
-type ChunkRepository struct {
+// ChunkRepository 文档分块仓库接口
+type ChunkRepository interface {
+	Create(chunk *DocumentChunk) error
+	VectorSearch(queryVector []float32, docType, language string, limit int) ([]*DocumentChunk, error)
+	HybridSearch(queryVector []float32, keyword, docType, language string, limit int) ([]*DocumentChunk, error)
+}
+
+// ChunkRepositoryImpl 文档分块仓库实现
+type ChunkRepositoryImpl struct {
 	db *sqlx.DB
 }
 
-func NewChunkRepository(db *sqlx.DB) *ChunkRepository {
-	return &ChunkRepository{db: db}
+func NewChunkRepository(db *sqlx.DB) ChunkRepository {
+	return &ChunkRepositoryImpl{db: db}
 }
 
 // Create 创建文档分块
-func (r *ChunkRepository) Create(chunk *DocumentChunk) error {
+func (r *ChunkRepositoryImpl) Create(chunk *DocumentChunk) error {
 	sql, args := xb.Of(&DocumentChunk{}).
 		Insert(func(ib *xb.InsertBuilder) {
 			ib.Set("doc_id", chunk.DocID).
@@ -34,7 +41,7 @@ func (r *ChunkRepository) Create(chunk *DocumentChunk) error {
 }
 
 // VectorSearch 向量搜索
-func (r *ChunkRepository) VectorSearch(queryVector []float32, docType, language string, limit int) ([]*DocumentChunk, error) {
+func (r *ChunkRepositoryImpl) VectorSearch(queryVector []float32, docType, language string, limit int) ([]*DocumentChunk, error) {
 	sql, args := xb.Of(&DocumentChunk{}).
 		VectorSearch("embedding", queryVector, limit).
 		Eq("doc_type", docType).
@@ -51,7 +58,7 @@ func (r *ChunkRepository) VectorSearch(queryVector []float32, docType, language 
 }
 
 // HybridSearch 混合搜索（关键词 + 向量）
-func (r *ChunkRepository) HybridSearch(queryVector []float32, keyword, docType, language string, limit int) ([]*DocumentChunk, error) {
+func (r *ChunkRepositoryImpl) HybridSearch(queryVector []float32, keyword, docType, language string, limit int) ([]*DocumentChunk, error) {
 	// 先做向量检索（over-fetch）
 	vectorLimit := limit * 3
 

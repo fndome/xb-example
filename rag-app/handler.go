@@ -50,7 +50,7 @@ func CreateDocumentHandler(service *RAGService) gin.HandlerFunc {
 }
 
 // RAGQueryHandler RAG 查询处理器
-func RAGQueryHandler(service *RAGService) gin.HandlerFunc {
+func RAGQueryHandler(service *RAGService, agenticService *AgenticRAGService) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var req RAGQueryRequest
 		if err := c.ShouldBindJSON(&req); err != nil {
@@ -58,8 +58,23 @@ func RAGQueryHandler(service *RAGService) gin.HandlerFunc {
 			return
 		}
 
-		// 执行 RAG 查询
-		resp, err := service.Query(c.Request.Context(), req)
+		// 判断使用哪个版本的 RAG
+		useAgentic := true // 默认使用第三代
+		if req.UseAgentic != nil {
+			useAgentic = *req.UseAgentic
+		}
+
+		var resp *RAGQueryResponse
+		var err error
+
+		if useAgentic {
+			// 第三代 Agentic RAG
+			resp, err = agenticService.Query(c.Request.Context(), req)
+		} else {
+			// 第一代 RAG
+			resp, err = service.Query(c.Request.Context(), req)
+		}
+
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return

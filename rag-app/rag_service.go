@@ -8,12 +8,12 @@ import (
 
 // RAGService RAG 服务
 type RAGService struct {
-	repo     *ChunkRepository
+	repo     ChunkRepository
 	embedder EmbeddingService
 	llm      LLMService
 }
 
-func NewRAGService(repo *ChunkRepository, embedder EmbeddingService, llm LLMService) *RAGService {
+func NewRAGService(repo ChunkRepository, embedder EmbeddingService, llm LLMService) *RAGService {
 	return &RAGService{
 		repo:     repo,
 		embedder: embedder,
@@ -114,5 +114,34 @@ type MockLLMService struct{}
 
 func (s *MockLLMService) Generate(ctx context.Context, prompt string) (string, error) {
 	// 实际应用中应该调用真实的 LLM API（如 OpenAI, DeepSeek）
+	
+	// 如果是规划提示词，返回 JSON 格式
+	if strings.Contains(prompt, "分析这个问题并输出 JSON 格式的规划") {
+		// 复杂问题（比较、推理等）
+		if strings.Contains(prompt, "区别") || strings.Contains(prompt, "比较") || 
+		   strings.Contains(prompt, "优势") || strings.Contains(prompt, "为什么") {
+			return `{
+  "is_simple": false,
+  "question_type": "comparison",
+  "sub_queries": [
+    "Go 在并发编程上的特点",
+    "Rust 在并发编程上的特点",
+    "Go 和 Rust 并发编程的区别"
+  ],
+  "keywords": ["Go", "Rust", "并发", "区别"],
+  "reasoning": "这是一个比较性问题，需要拆解为多个子问题"
+}`, nil
+		}
+		
+		// 简单问题（默认）
+		return `{
+  "is_simple": true,
+  "question_type": "factual",
+  "sub_queries": [],
+  "keywords": [],
+  "reasoning": "这是一个简单的事实性问题，可以直接回答"
+}`, nil
+	}
+	
 	return "这是基于检索文档生成的答案...", nil
 }

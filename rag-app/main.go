@@ -22,6 +22,9 @@ func main() {
 	llm := &MockLLMService{}
 	ragService := NewRAGService(repo, embedder, llm)
 
+	// ⭐ 创建第三代 Agentic RAG 服务
+	agenticService := NewAgenticRAGService(ragService)
+
 	// 创建 HTTP 服务
 	r := gin.Default()
 
@@ -29,14 +32,14 @@ func main() {
 	api := r.Group("/api")
 	{
 		api.POST("/documents", CreateDocumentHandler(ragService))
-		api.POST("/rag/query", RAGQueryHandler(ragService))
+		api.POST("/rag/query", RAGQueryHandler(ragService, agenticService))
 	}
 
 	// 启动服务
-	log.Println("RAG Server starting on :8080")
+	log.Println("RAG Server (v3 Agentic) starting on :8080")
 	log.Println("Endpoints:")
 	log.Println("  POST /api/documents - 上传文档")
-	log.Println("  POST /api/rag/query - RAG 查询")
+	log.Println("  POST /api/rag/query - RAG 查询（默认使用第三代 Agentic RAG）")
 	
 	if err := r.Run(":8080"); err != nil {
 		log.Fatal(err)
