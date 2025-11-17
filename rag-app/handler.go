@@ -84,6 +84,25 @@ func RAGQueryHandler(service *RAGService, agenticService *AgenticRAGService) gin
 	}
 }
 
+// REFRAGQueryHandler REFRAG 查询处理器
+func REFRAGQueryHandler(service *REFRAGService) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var req REFRAGQueryRequest
+		if err := c.ShouldBindJSON(&req); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		resp, err := service.Query(c.Request.Context(), req)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		c.JSON(http.StatusOK, resp)
+	}
+}
+
 // splitDocument 简单的文档分块（实际应用中应使用更复杂的分块策略）
 func splitDocument(content string) []string {
 	// 按段落分块

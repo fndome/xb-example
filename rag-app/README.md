@@ -2,7 +2,7 @@
 
 这是一个使用 xb 构建的完整 RAG (Retrieval Augmented Generation) 应用，展示如何将文档检索与 LLM 结合。
 
-## ⭐ 第三代 Agentic RAG 已实现！第四代示例已完成！
+## ⭐ 第三代 Agentic RAG 已实现！第四代示例已完成！REFRAG 风格示例已添加！
 
 本应用已升级到**第三代 Agentic RAG**，支持：
 - ✅ **智能问题拆解**：自动将复杂问题拆解为多个子问题
@@ -17,10 +17,17 @@
 - ✅ **xb 使用技巧**：指针类型、In() 方法、最佳实践
 - ✅ **数据库 Schema**：包含索引优化和示例数据
 
+**⭐ REFRAG 风格 RAG** 示例已添加：
+- ✅ **压缩 + 智能选择**：在送入 LLM 前过滤 99% 噪音
+- ✅ **混合输入**：完整文本 + 压缩向量
+- ✅ **性能优化**：速度提升 30 倍，成本降低 50-75%
+- ✅ **完整实现**：包含压缩、评分、选择、混合输入全流程
+
 详见：
 - **[第三代 Agentic RAG 文档](./AGENTIC_RAG_V3.md)** 🚀（已实现）
 - **[第四代多模态 RAG 路线图](./MULTIMODAL_RAG_ROADMAP.md)** 📋（规划中）
 - **[第四代示例代码](./g4/README.md)** 💎（已完成 - 10 个示例）
+- **[REFRAG 风格指南](./REFRAG_GUIDE.md)** ⚡（新增 - 压缩优化）
 - **[RAG 演进史](./RAG_EVOLUTION.md)** 📚（完整对比）
 
 ## 📋 功能
@@ -30,6 +37,7 @@
 - ✅ 语义检索
 - ✅ 混合检索（关键词 + 向量）
 - ✅ **第三代 Agentic RAG**（问题拆解 + 多轮召回）
+- ✅ **⭐ REFRAG 风格 RAG**（压缩 + 智能选择 + 混合输入）
 
 ### 生产就绪集成
 - ✅ **真实 LLM**：OpenAI, DeepSeek（参见 `integrations/llm/`）
@@ -116,6 +124,17 @@ curl -X POST http://localhost:8080/api/rag/query \
     "question": "什么是 Channel？",
     "use_agentic": false
   }'
+
+# ⭐ REFRAG 风格查询（压缩 + 智能选择）
+curl -X POST http://localhost:8080/api/rag/refrag \
+  -H "Content-Type: application/json" \
+  -d '{
+    "question": "Go 和 Rust 在并发编程上有什么区别？",
+    "doc_type": "article",
+    "over_fetch_k": 100,
+    "expand_k": 5,
+    "compression_ratio": 16
+  }'
 ```
 
 ## 📁 项目结构
@@ -128,6 +147,7 @@ rag-app/
 │   ├── repository.go          # 数据访问层
 │   ├── rag_service.go         # 第一代 RAG 服务
 │   ├── agentic_rag.go         # ⭐ 第三代 Agentic RAG 服务
+│   ├── refrag_service.go      # ⭐ REFRAG 风格 RAG 服务
 │   └── handler.go             # HTTP 处理器
 │
 ├── 生产集成
@@ -181,6 +201,7 @@ xb 可以作为 LlamaIndex 的向量存储后端，提供高性能检索：
 - **[第三代 Agentic RAG](./AGENTIC_RAG_V3.md)** ⭐ - 问题拆解 + 多轮召回（已实现）
 - **[第四代多模态 RAG 路线图](./MULTIMODAL_RAG_ROADMAP.md)** 🚀 - 双图谱 + 多模态（规划中）
 - **[第四代示例代码](./g4/README.md)** 💎 - 10 个完整示例（已完成）
+- **[REFRAG 风格指南](./REFRAG_GUIDE.md)** ⚡ - 压缩优化方案（新增）
 - **[实现总结](./IMPLEMENTATION_SUMMARY.md)** 📝 - 第三代实现详情
 - **[更新总结](./UPDATE_SUMMARY.md)** 📋 - 最新更新内容
 
