@@ -3,7 +3,7 @@ module qdrant-app
 go 1.21
 
 require (
-	github.com/fndome/xb v1.2.0
+	github.com/fndome/xb v1.4.0
 	github.com/gin-gonic/gin v1.9.1
 )
 

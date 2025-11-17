@@ -3,7 +3,7 @@ module pageindex-app
 go 1.21
 
 require (
-	github.com/fndome/xb v1.2.0
+	github.com/fndome/xb v1.4.0
 	github.com/gin-gonic/gin v1.9.1
 	github.com/jmoiron/sqlx v1.3.5
 	github.com/lib/pq v1.10.9
