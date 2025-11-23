@@ -21,14 +21,10 @@ func TestBuildQdrantSearchJSON(t *testing.T) {
 		VectorSearch("embedding", queryVector, 20).
 		Eq("doc_type", "article").
 		Eq("language", "zh").
-		QdrantX(func(qx *xb.QdrantBuilderX) {
-			qx.ScoreThreshold(0.8).
-				HnswEf(128).
-				WithVector(true)
-		}).
+		Custom(xb.NewQdrantBuilder().ScoreThreshold(0.8).HnswEf(128).WithVector(true).Build()).
 		Build()
 
-	jsonStr, err := built.ToQdrantJSON()
+	jsonStr, err := built.JsonOfSelect()
 	if err != nil {
 		t.Fatalf("ToQdrantJSON failed: %v", err)
 	}
@@ -52,16 +48,15 @@ func TestBuildQdrantSearchJSON(t *testing.T) {
 
 func TestBuildRecommendJSON(t *testing.T) {
 	built := xb.Of(&Document{}).
-		QdrantX(func(qx *xb.QdrantBuilderX) {
-			qx.Recommend(func(rb *xb.RecommendBuilder) {
+		Custom(xb.NewQdrantBuilder().
+			Recommend(func(rb *xb.RecommendBuilder) {
 				rb.Positive(123, 456).
 					Negative(789).
 					Limit(20)
-			})
-		}).
+			}).Build()).
 		Build()
 
-	jsonStr, err := built.ToQdrantRecommendJSON()
+	jsonStr, err := built.JsonOfSelect()
 	if err != nil {
 		t.Fatalf("ToQdrantRecommendJSON failed: %v", err)
 	}
@@ -90,9 +85,9 @@ func TestAutoFiltering(t *testing.T) {
 		Eq("language", emptyLanguage). // 应被自动过滤
 		Build()
 
-	jsonStr, err := built.ToQdrantJSON()
+	jsonStr, err := built.JsonOfSelect()
 	if err != nil {
-		t.Fatalf("ToQdrantJSON failed: %v", err)
+		t.Fatalf("JsonOfSelect failed: %v", err)
 	}
 
 	t.Logf("JSON with auto-filtering:\n%s", jsonStr)

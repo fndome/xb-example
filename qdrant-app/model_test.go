@@ -83,10 +83,8 @@ func TestQdrantJSONGeneration(t *testing.T) {
 			name: "search with QdrantX",
 			buildFunc: func() *xb.Built {
 				return xb.Of(&Document{}).
+					Custom(xb.NewQdrantBuilder().ScoreThreshold(0.8).HnswEf(128).Build()).
 					VectorSearch("embedding", queryVector, 10).
-					QdrantX(func(qx *xb.QdrantBuilderX) {
-						qx.ScoreThreshold(0.8).HnswEf(128)
-					}).
 					Build()
 			},
 			checkFields: []string{"vector", "score_threshold", "params"},
@@ -96,9 +94,9 @@ func TestQdrantJSONGeneration(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			built := tt.buildFunc()
-			jsonBytes, err := built.ToQdrantJSON()
+			jsonBytes, err := built.JsonOfSelect()
 			if err != nil {
-				t.Fatalf("ToQdrantJSON failed: %v", err)
+				t.Fatalf("JsonOfSelect failed: %v", err)
 			}
 
 			jsonStr := string(jsonBytes)

@@ -33,13 +33,10 @@ func (c *QdrantClient) Search(queryVector []float32, docType, language string, m
 		Eq("doc_type", docType).
 		Eq("language", language).
 		Gt("score", minScore).
-		QdrantX(func(qx *xb.QdrantBuilderX) {
-			qx.ScoreThreshold(float32(minScore)).
-				HnswEf(128)
-		}).
+		Custom(xb.NewQdrantBuilder().ScoreThreshold(float32(minScore)).HnswEf(128).Build()).
 		Build()
 
-	jsonStr, err := built.ToQdrantJSON()
+	jsonStr, err := built.JsonOfSelect()
 	if err != nil {
 		return nil, err
 	}
@@ -86,16 +83,15 @@ func (c *QdrantClient) Search(queryVector []float32, docType, language string, m
 // Recommend 推荐查询
 func (c *QdrantClient) Recommend(positive, negative []int64, limit int) ([]*Document, error) {
 	built := xb.Of(&Document{}).
-		QdrantX(func(qx *xb.QdrantBuilderX) {
-			qx.Recommend(func(rb *xb.RecommendBuilder) {
+		Custom(xb.NewQdrantBuilder().
+			Recommend(func(rb *xb.RecommendBuilder) {
 				rb.Positive(positive...).
 					Negative(negative...).
 					Limit(limit)
-			})
-		}).
+			}).Build()).
 		Build()
 
-	jsonStr, err := built.ToQdrantRecommendJSON()
+	jsonStr, err := built.JsonOfSelect()
 	if err != nil {
 		return nil, err
 	}
